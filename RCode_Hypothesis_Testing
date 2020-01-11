@@ -1,0 +1,171 @@
+
+R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
+Copyright (C) 2019 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # R Hypothesis Tests
+> 
+> install.packages("dplyr")
+Installing package into ‘C:/Users/w00408529/Documents/R/win-library/3.6’
+(as ‘lib’ is unspecified)
+--- Please select a CRAN mirror for use in this session ---
+trying URL 'https://mirror.las.iastate.edu/CRAN/bin/windows/contrib/3.6/dplyr_0.8.3.zip'
+Content type 'application/zip' length 3225644 bytes (3.1 MB)
+downloaded 3.1 MB
+
+package ‘dplyr’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+        C:\Users\w00408529\AppData\Local\Temp\Rtmp6l0Tuu\downloaded_packages
+> 
+>  
+> 
+> tScore_before <- c(40, 62, 74, 22, 64, 65, 49, 49, 49)
+> 
+> tScore_after <- c(68, 61, 64, 76, 90, 75, 66, 60, 63)
+> 
+> # Create a data frame
+> 
+> my_data <- data.frame(
++ 
++                 group = rep(c("Score Before", "Score After"), each = 9),
++ 
++                 scores = c(tScore_before,  tScore_after)
++ 
++                 )
+> 
+>  
+> 
+> # Print all data
+> 
+> print(my_data)
+          group scores
+1  Score Before     40
+2  Score Before     62
+3  Score Before     74
+4  Score Before     22
+5  Score Before     64
+6  Score Before     65
+7  Score Before     49
+8  Score Before     49
+9  Score Before     49
+10  Score After     68
+11  Score After     61
+12  Score After     64
+13  Score After     76
+14  Score After     90
+15  Score After     75
+16  Score After     66
+17  Score After     60
+18  Score After     63
+> 
+>  
+> 
+> #Compute summary statistics by groups
+> 
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package ‘dplyr’ was built under R version 3.6.2 
+> 
+> group_by(my_data, group) %>%
++ 
++   summarise(
++ 
++     count = n(),
++ 
++     mean = mean(scores, na.rm = TRUE),
++ 
++     sd = sd(scores, na.rm = TRUE)
++ 
++   )
+# A tibble: 2 x 4
+  group        count  mean    sd
+  <fct>        <int> <dbl> <dbl>
+1 Score After      9  69.2  9.63
+2 Score Before     9  52.7 15.7 
+> 
+>  
+> 
+> # Compute Unpaired Two Sample t-test
+> 
+> res <- t.test(tScore_before, tScore_after, var.equal = TRUE)
+> 
+> res
+
+        Two Sample t-test
+
+data:  tScore_before and tScore_after
+t = -2.7007, df = 16, p-value = 0.01575
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -29.550620  -3.560491
+sample estimates:
+mean of x mean of y 
+ 52.66667  69.22222 
+
+> 
+>  
+> 
+> # Compute independent t-test
+> 
+> res <- t.test(scores ~ group, data = my_data, var.equal = TRUE)
+> 
+> res
+
+        Two Sample t-test
+
+data:  scores by group
+t = 2.7007, df = 16, p-value = 0.01575
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  3.560491 29.550620
+sample estimates:
+ mean in group Score After mean in group Score Before 
+                  69.22222                   52.66667 
+
+> 
+>  
+> 
+> #test whether the average score before score is less than the average after score, type this:
+> 
+> t.test(scores ~ group, data = my_data,
++ 
++         var.equal = TRUE, alternative = "less")
+
+        Two Sample t-test
+
+data:  scores by group
+t = 2.7007, df = 16, p-value = 0.9921
+alternative hypothesis: true difference in means is less than 0
+95 percent confidence interval:
+     -Inf 27.25786
+sample estimates:
+ mean in group Score After mean in group Score Before 
+                  69.22222                   52.66667 
+
+> 
